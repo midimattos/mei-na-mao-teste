@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEI na Mão - Controle Financeiro</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4CAF50"> 
+</head>
+<body>
+
+    <header>
+        <h1>MEI na Mão</h1>
+        <p id="mes-atual">Dezembro de 2025</p>
+    </header>
+
+    <main>
+        <section class="kpis-container">
+            <div class="kpi-card receita">
+                <h3>Receita Bruta</h3>
+                <p id="receita-mes" class="valor-grande">R$ 0,00</p>
+            </div>
+
+            <div class="kpi-card despesa">
+                <h3>Despesa Total</h3>
+                <p id="despesa-mes" class="valor-grande">R$ 0,00</p>
+            </div>
+
+            <div class="kpi-card lucro">
+                <h3>Lucro Líquido</h3>
+                <p id="lucro-mes" class="valor-gigante">R$ 0,00</p>
+            </div>
+        </section>
+
+        <section class="faturamento-anual">
+            <h2>Faturamento Acumulado (Ano)</h2>
+            <div class="progress-bar-container">
+                <div id="faturamento-progresso" class="progress-bar" style="width: 0%;"></div>
+            </div>
+            <p id="faturamento-info">R$ 0,00 / R$ 81.000,00 (0%)</p>
+        </section>
+        
+        <section class="identificacao">
+            <h2>Identificação do Negócio</h2>
+            <form id="form-identificacao">
+                <label for="codinome">Codinome ou Nome do Negócio:</label>
+                <input type="text" id="codinome" name="codinome" required placeholder="Ex: Meu MEI, Loja do Zé" maxlength="50">
+                <button type="submit" class="btn-salvar-id">Salvar Identificação</button>
+            </form>
+            <p id="identificacao-atual" style="margin-top: 10px; font-weight: bold;"></p>
+        </section>
+        
+        <section class="analise-despesas">
+            <h2>Distribuição de Despesas (Mês)</h2>
+            <div id="grafico-pizza-container" class="grafico-pizza-container">
+                </div>
+            <ul id="legenda-despesas" class="legenda-despesas">
+                </ul>
+        </section>
+        
+        <section class="link-extrato">
+            <button id="btn-ver-extrato" class="btn-acao btn-extrato">
+                Ver Extrato e Fazer Backup
+            </button>
+        </section>
+
+    </main>
+
+    <footer class="acoes-rapidas">
+        <button id="btn-receita" class="btn-acao btn-receita">Registrar Receita</button>
+        <button id="btn-despesa" class="btn-acao btn-despesa">Registrar Despesa</button>
+    </footer>
+    
+    <div id="modal-registro" class="modal-overlay">
+        <div class="modal-conteudo">
+            <h2 id="modal-titulo">Registrar Transação</h2>
+            <form id="form-transacao">
+                
+                <input type="hidden" id="tipo-transacao" name="tipo">
+
+                <label for="valor">Valor (R$):</label>
+                <input type="number" id="valor" name="valor" required min="0.01" step="0.01" placeholder="Ex: 150.00" autofocus>
+
+                <label for="descricao">Descrição:</label>
+                <input type="text" id="descricao" name="descricao" required placeholder="Ex: Serviço de Consultoria">
+
+                <label for="data">Data:</label>
+                <input type="date" id="data" name="data" required>
+
+                <label for="categoria">Categoria:</label>
+                <select id="categoria" name="categoria" required>
+                    <option value="" disabled selected>Selecione uma categoria</option>
+                    <option class="receita-opt" value="Serviços">Serviços Prestados</option>
+                    <option class="receita-opt" value="Vendas">Vendas de Produto</option>
+                    <option class="receita-opt" value="Outras_Receitas">Outras Receitas</option>
+                    <option class="despesa-opt" value="Material">Compra de Material</option>
+                    <option class="despesa-opt" value="Aluguel">Aluguel/Estrutura</option>
+                    <option class="despesa-opt" value="Marketing">Marketing/Publicidade</option>
+                    <option class="despesa-opt" value="Impostos">Impostos/Taxas</option>
+                    <option class="despesa-opt" value="Outras_Despesas">Outras Despesas</option>
+                </select>
+
+                <div class="form-acoes">
+                    <button type="button" id="btn-cancelar" class="btn-cancelar">Cancelar</button>
+                    <button type="submit" id="btn-salvar" class="btn-salvar">Salvar Registro</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="modal-extrato" class="modal-overlay">
+        <div class="modal-conteudo modal-extrato-conteudo">
+            <h2>Extrato Detalhado de Movimentações</h2>
+            
+            <div class="filtros-extrato">
+                <select id="filtro-mes">
+                    <option value="">Todos os Meses</option>
+                    </select>
+                <select id="filtro-categoria">
+                    <option value="">Todas as Categorias</option>
+                    </select>
+            </div>
+            <div id="modal-licenca" class="modal-overlay">
+        <div class="modal-conteudo">
+            <h2>Licença Expirada ou Bloqueada</h2>
+            <p id="msg-licenca-texto">Seu acesso ao "MEI na Mão" precisa ser revalidado. Por favor, insira sua chave de licença e conecte-se à internet para continuar usando o aplicativo.</p>
+            
+            <form id="form-licenca">
+                <label for="chave-licenca">Chave de Licença:</label>
+                <input type="text" id="chave-licenca" name="chave" required placeholder="Insira seu código de licença" maxlength="30">
+                <p id="msg-licenca" style="color: red; margin-top: 10px;"></p>
+                <div class="form-acoes">
+                    <button type="submit" id="btn-validar-licenca" class="btn-salvar">Validar e Desbloquear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+            <div class="tabela-container">
+                <table id="tabela-extrato">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Descrição</th>
+                            <th>Categoria</th>
+                            <th>Valor</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="extrato-body">
+                        </tbody>
+                </table>
+            </div>
+
+            <div class="form-acoes">
+                <button type="button" id="btn-exportar" class="btn-salvar">Fazer Backup (CSV)</button>
+                <button type="button" id="btn-fechar-extrato" class="btn-cancelar">Fechar</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registrado com sucesso:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Falha no registro do Service Worker:', error);
+                    });
+            });
+        }
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

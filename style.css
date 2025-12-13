@@ -1,0 +1,367 @@
+/* Reset Básico */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+/* Header */
+header {
+    background-color: #4CAF50; /* Verde Principal */
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+header h1 {
+    margin: 0;
+    font-size: 1.5em;
+}
+header p {
+    margin: 5px 0 0;
+    font-size: 0.9em;
+}
+
+/* Container de KPIs */
+.kpis-container {
+    display: flex;
+    flex-direction: column; 
+    gap: 15px;
+    padding: 15px;
+}
+
+.kpi-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.kpi-card h3 {
+    margin-top: 0;
+    font-size: 1em;
+    color: #666;
+}
+
+.valor-grande {
+    font-size: 1.8em;
+    font-weight: bold;
+}
+
+.valor-gigante {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #00796B; /* Destaque para Lucro */
+}
+
+/* Cores específicas para Receita e Despesa */
+.receita .valor-grande {
+    color: #2E7D32; 
+}
+.despesa .valor-grande {
+    color: #D32F2F; 
+}
+
+/* Faturamento Anual */
+.faturamento-anual {
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.progress-bar-container {
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+    height: 20px;
+    margin: 10px 0;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #4CAF50;
+    transition: width 0.3s ease;
+}
+
+/* NOVO: Estilos para a Identificação */
+.identificacao {
+    padding: 15px;
+    margin-top: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.identificacao input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+.btn-salvar-id {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+
+/* Estilos para a seção de Análise e Gráfico */
+.analise-despesas {
+    padding: 15px;
+    margin-top: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.grafico-pizza-container {
+    width: 200px;
+    height: 200px;
+    margin: 20px auto;
+    border-radius: 50%;
+    background: conic-gradient(#eee 0% 100%);
+}
+
+.legenda-despesas {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.legenda-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    padding-bottom: 3px;
+    border-bottom: 1px dotted #eee;
+    font-size: 0.9em;
+}
+
+.legenda-cor {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    margin-right: 10px;
+}
+
+/* Estilo para o botão de Extrato */
+.link-extrato {
+    padding: 15px;
+    text-align: center;
+    margin-bottom: 70px; 
+}
+
+.btn-extrato {
+    background-color: #00796B; 
+}
+
+/* Footer Fixo (Ações Rápidas) */
+.acoes-rapidas {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    background-color: white;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+}
+
+.btn-acao {
+    flex-grow: 1;
+    margin: 0 5px;
+    padding: 15px 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-receita {
+    background-color: #2E7D32;
+    color: white;
+}
+
+.btn-despesa {
+    background-color: #D32F2F;
+    color: white;
+}
+
+
+/* Estilos para o Modal de Registro e Extrato */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none; 
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+}
+
+.modal-conteudo {
+    background-color: white;
+    width: 90%; 
+    max-width: 500px; 
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-conteudo h2 {
+    margin-top: 0;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Estilo do Formulário */
+#form-transacao label {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+#form-transacao input[type="text"],
+#form-transacao input[type="number"],
+#form-transacao input[type="date"],
+#form-transacao select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; 
+    font-size: 1em;
+}
+
+/* Ações do Formulário */
+.form-acoes {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.btn-cancelar, .btn-salvar {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    flex-grow: 1;
+}
+
+.btn-cancelar {
+    background-color: #9E9E9E;
+    color: white;
+}
+
+.btn-salvar {
+    background-color: #4CAF50; 
+    color: white;
+}
+
+.modal-receita { color: #2E7D32; }
+.modal-despesa { color: #D32F2F; }
+
+/* Ajustes específicos para o Modal de Extrato */
+.modal-extrato-conteudo {
+    width: 95%; 
+    max-width: 900px;
+}
+
+/* Filtros */
+.filtros-extrato {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.filtros-extrato select {
+    flex-grow: 1;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/* Tabela */
+.tabela-container {
+    overflow-x: auto; 
+    max-height: 40vh; 
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+
+#tabela-extrato {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#tabela-extrato th, #tabela-extrato td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    font-size: 0.85em;
+}
+
+#tabela-extrato th {
+    background-color: #f2f2f2;
+    position: sticky; 
+    top: 0;
+}
+
+.receita-linha { color: #2E7D32; font-weight: bold; }
+.despesa-linha { color: #D32F2F; font-weight: bold; }
+
+.btn-deletar {
+    background: none;
+    border: none;
+    color: #D32F2F;
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 0;
+}
+
+
+/* Ajuste para telas maiores (Desktop/Tablet) */
+@media (min-width: 600px) {
+    main {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .kpis-container {
+        flex-direction: row; 
+    }
+    .kpi-card {
+        flex: 1;
+    }
+    .modal-overlay {
+        align-items: center;
+    }
+}
+
+@media (max-width: 599px) {
+    .modal-overlay {
+        align-items: flex-start;
+        padding-top: 20px;
+    }
+}
