@@ -83,7 +83,7 @@ header p {
     transition: width 0.3s ease;
 }
 
-/* NOVO: Estilos para a Identificação */
+/* Estilos para a Identificação */
 .identificacao {
     padding: 15px;
     margin-top: 20px;
@@ -178,6 +178,21 @@ header p {
     z-index: 100;
 }
 
+/* --- NOVO ESTILO: ESTADO DESABILITADO (Resolve o "botão estranho") --- */
+
+/* Quando os botões estão desabilitados pelo JS (por causa da licença) */
+.btn-acao[disabled],
+.btn-extrato[disabled],
+.btn-salvar-id[disabled] {
+    opacity: 0.5; /* Deixa o botão mais claro */
+    cursor: not-allowed; /* Símbolo de "não permitido" */
+    filter: grayscale(100%); /* Coloca em tons de cinza ou cor apagada */
+    background-color: #ccc !important; /* Cor neutra para indicar bloqueio */
+    color: #666 !important;
+}
+/*----------------------------------------------------------------------*/
+
+
 .btn-acao {
     flex-grow: 1;
     margin: 0 5px;
@@ -200,7 +215,7 @@ header p {
 }
 
 
-/* Estilos para o Modal de Registro e Extrato */
+/* Estilos para o Modal de Registro, Extrato E LICENÇA */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -208,7 +223,7 @@ header p {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
-    display: none; 
+    display: none; /* ESCONDIDO POR PADRÃO */
     justify-content: center;
     align-items: center;
     z-index: 200;
@@ -223,6 +238,8 @@ header p {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     max-height: 90vh;
     overflow-y: auto;
+    /* Adicionado para garantir que o conteúdo do modal apareça */
+    pointer-events: all; 
 }
 
 .modal-conteudo h2 {
@@ -234,17 +251,20 @@ header p {
 }
 
 /* Estilo do Formulário */
-#form-transacao label {
+#form-transacao label,
+#form-licenca label { /* Aplica ao formulário de licença também */
     display: block;
     margin-top: 10px;
     margin-bottom: 5px;
     font-weight: bold;
 }
 
+/* Aplica ao input de licença também */
 #form-transacao input[type="text"],
 #form-transacao input[type="number"],
 #form-transacao input[type="date"],
-#form-transacao select {
+#form-transacao select,
+#form-licenca input[type="text"] {
     width: 100%;
     padding: 12px;
     margin-bottom: 10px;

@@ -109,6 +109,7 @@
             </form>
         </div>
     </div>
+
     <div id="modal-extrato" class="modal-overlay">
         <div class="modal-conteudo modal-extrato-conteudo">
             <h2>Extrato Detalhado de Movimentações</h2>
@@ -121,7 +122,31 @@
                     <option value="">Todas as Categorias</option>
                     </select>
             </div>
-            <div id="modal-licenca" class="modal-overlay">
+
+            <div class="tabela-container">
+                <table id="tabela-extrato">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Descrição</th>
+                            <th>Categoria</th>
+                            <th>Valor</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="extrato-body">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="form-acoes">
+                <button type="button" id="btn-exportar" class="btn-salvar">Fazer Backup (CSV)</button>
+                <button type="button" id="btn-fechar-extrato" class="btn-cancelar">Fechar</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="modal-licenca" class="modal-overlay">
         <div class="modal-conteudo">
             <h2>Licença Expirada ou Bloqueada</h2>
             <p id="msg-licenca-texto">Seu acesso ao "MEI na Mão" precisa ser revalidado. Por favor, insira sua chave de licença e conecte-se à internet para continuar usando o aplicativo.</p>
@@ -136,33 +161,11 @@
             </form>
         </div>
     </div>
-
-            <div class="tabela-container">
-                <table id="tabela-extrato">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Descrição</th>
-                            <th>Categoria</th>
-                            <th>Valor</th>
-                            <th>Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody id="extrato-body">
-                        </tbody>
-                </table>
-            </div>
-
-            <div class="form-acoes">
-                <button type="button" id="btn-exportar" class="btn-salvar">Fazer Backup (CSV)</button>
-                <button type="button" id="btn-fechar-extrato" class="btn-cancelar">Fechar</button>
-            </div>
-        </div>
-    </div>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
+                // A URL do Service Worker deve ser absoluta ou relativa ao root para PWA
+                navigator.serviceWorker.register('/service-worker.js') 
                     .then(registration => {
                         console.log('Service Worker registrado com sucesso:', registration.scope);
                     })
