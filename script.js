@@ -2,7 +2,7 @@
 const LIMITE_MEI_ANUAL = 81000.00;
 
 // URL: SUBSTITUA ESTE VALOR PELA SUA URL REAL DE PUBLICAÇÃO DO APPS SCRIPT
-const FIREBASE_VALIDATION_URL = 'https://script.google.com/macros/s/AKfycby4-nqIs-A4IrekhrdwcX8rRjeVOBrUYudpAAcngH_4OSGyZZcyDoAZbbv2RDPFjBUEUQ/exec'; 
+const FIREBASE_VALIDATION_URL = 'https://script.google.com/macros/s/AKfycbxWwt0Nhkp9rM1jLNZe5FDrD15PHtwm65R477QjCWwRopTEj4_0OnLtlyuJS4AE2SIqaA/exec'; 
 
 // Cores fixas para categorias de despesas (para o gráfico)
 const CORES_DESPESAS = {
