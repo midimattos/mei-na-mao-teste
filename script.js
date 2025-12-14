@@ -536,5 +536,4 @@ document.addEventListener('DOMContentLoaded', () => {
         exibirIdentificacao(codinomeInicial);
         atualizarDashboard();
     }
-
 });
