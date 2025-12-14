@@ -170,7 +170,7 @@ async function validarLicenca(event) {
             msgLicencaP.textContent = 'Esta licença foi bloqueada.';
         } else if (licenseData.consumedBy && licenseData.consumedBy !== userId) { 
             // CHAVE JÁ CONSUMIDA: Rejeita se o consumedBy for diferente do usuário atual
-            msgLicencaP.textContent = `Chave já utilizada por outro usuário: ${licenseData.consumedBy}.`;
+            msgLicencaP.textContent = `Esta chave já foi utilizada por outro usuário.`;
         } else {
             // Licença é válida E não está consumida (ou está consumida por este mesmo usuário)
             const validadeRemota = new Date(licenseData.validUntil);
