@@ -262,7 +262,7 @@ function renderizarGraficoDespesas(transacoesMes) {
 }
 
 function atualizarDashboard() {
-    const hoje = new Date();
+    const hoje = new Date(); // <--- DECLARAÇÃO CORRETA A SER MANTIDA
     const mesAtual = hoje.getMonth();
     const anoAtual = hoje.getFullYear();
 
@@ -315,7 +315,7 @@ function atualizarDashboard() {
         progressElement.style.backgroundColor = '#4CAF50'; // Verde
     }
 
-    // Atualiza o mês no header
+    // Atualiza o mês no header (a duplicação de 'const hoje = new Date();' foi removida aqui)
     const nomeMes = hoje.toLocaleString('pt-BR', { month: 'long' });
     document.getElementById('mes-atual').textContent = `${nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1)} de ${anoAtual}`;
 
@@ -328,7 +328,7 @@ function atualizarDashboard() {
 function abrirFormulario(tipo) {
     formTransacao.reset();
     
-    
+    const hoje = new Date().toISOString().split('T')[0];
     document.getElementById('data').value = hoje;
 
     tipoTransacaoInput.value = tipo;
@@ -526,7 +526,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     formIdentificacao = document.getElementById('form-identificacao');
     codinomeInput = document.getElementById('codinome');
-    identificacaoAtualP = document.getElementById('identificacao-atual'); // CRÍTICO: Variável que causou o erro!
+    identificacaoAtualP = document.getElementById('identificacao-atual'); // Variável crítica
 
     modalLicenca = document.getElementById('modal-licenca');
     formLicenca = document.getElementById('form-licenca');
