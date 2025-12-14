@@ -2,7 +2,7 @@
 const LIMITE_MEI_ANUAL = 81000.00;
 
 // URL: SUBSTITUA ESTE VALOR PELA SUA URL REAL DE PUBLICAÇÃO DO APPS SCRIPT
-const FIREBASE_VALIDATION_URL = 'https://script.google.com/macros/s/AKfycbzV7f43QP5UYi4koru889orjYtZQQfoeIo6JcxtxHuVKhz0ClplIvQqrI-gcw0rbCodKQ/exec'; 
+const FIREBASE_VALIDATION_URL = 'mei-na-mao-teste-m5hs-ol76o2mvf-midimattos-projects.vercel.app'; 
 
 // Cores fixas para categorias de despesas (para o gráfico)
 const CORES_DESPESAS = {
