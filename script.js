@@ -3,11 +3,10 @@
 // ==============================================================================
 
 // Importa as funções necessárias do Firebase SDK (versão modular)
-// A função 'update' é útil se você quiser gravar a data de renovação no Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import { get, getDatabase, ref } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-// Suas credenciais do Firebase (migradas do seu script de importação)
+// Suas credenciais do Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyCoj9Qd7OjBEhxn342sF5Z28l7sV25N86M",
     authDomain: "mei-na-mao-validacao.firebaseapp.com",
@@ -37,10 +36,10 @@ const CORES_DESPESAS = {
     'Outras_Despesas': '#FFC300'
 };
 
-// 🔴 CORREÇÃO DE ESCOPO: Declarar variáveis com 'let' no topo e inicializar dentro de DOMContentLoaded
+// 🔴 CORREÇÃO DE ESCOPO: Declarar variáveis DOM com 'let' no topo do módulo
 let modalRegistro, formTransacao, modalTitulo, tipoTransacaoInput, categoriaSelect;
 let modalExtrato, extratoBody, filtroMes, filtroCategoria, btnVerExtrato;
-let formIdentificacao, codinomeInput, identificacaoAtualP; // Variáveis que causaram o erro
+let formIdentificacao, codinomeInput, identificacaoAtualP; 
 let modalLicenca, formLicenca, chaveLicencaInput, msgLicencaP;
 
 
@@ -90,7 +89,7 @@ function salvarIdentificacao(event) {
 }
 
 function exibirIdentificacao(codinome) {
-    // 🟢 Correção: Agora as variáveis DOM são acessíveis via escopo do módulo
+    // 🟢 Correção: As variáveis DOM agora são inicializadas no DOMContentLoaded
     if (codinome) {
         identificacaoAtualP.textContent = `Identificação atual: ${codinome}`;
         codinomeInput.value = codinome; 
@@ -104,7 +103,7 @@ function exibirIdentificacao(codinome) {
 
 function checarLicenca() {
     const validade = carregarValidadeLicenca();
-    const hoje = new Date();
+    const hoje = new Date(); 
     const isOnline = navigator.onLine;
 
     if (!validade || validade <= hoje) {
@@ -127,7 +126,6 @@ function bloquearApp(mostrarModal, mensagem = "") {
 
     const isLocked = mostrarModal || (carregarValidadeLicenca() <= new Date() && !navigator.onLine);
 
-    // 🟢 Correção: Estas variáveis agora são acessíveis
     document.getElementById('btn-receita').disabled = isLocked;
     document.getElementById('btn-despesa').disabled = isLocked;
     document.getElementById('btn-ver-extrato').disabled = isLocked;
@@ -318,7 +316,6 @@ function atualizarDashboard() {
     }
 
     // Atualiza o mês no header
-    const hoje = new Date();
     const nomeMes = hoje.toLocaleString('pt-BR', { month: 'long' });
     document.getElementById('mes-atual').textContent = `${nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1)} de ${anoAtual}`;
 
@@ -331,7 +328,7 @@ function atualizarDashboard() {
 function abrirFormulario(tipo) {
     formTransacao.reset();
     
-    const hoje = new Date().toISOString().split('T')[0];
+    
     document.getElementById('data').value = hoje;
 
     tipoTransacaoInput.value = tipo;
@@ -511,10 +508,10 @@ function exportarCSV() {
 
 // --- 7. Event Listeners e Inicialização ---
 
-// 🔴 CORREÇÃO FINAL: EVENT LISTENERS SÓ PODEM SER ADICIONADOS APÓS O DOM ESTAR PRONTO
 document.addEventListener('DOMContentLoaded', () => {
     
     // 🔴 1. INICIALIZAÇÃO TARDIA DOS ELEMENTOS DOM DENTRO DO ESCOPO DOMContentLoaded
+    // Isso resolve o ReferenceError causado pelo type="module"
     modalRegistro = document.getElementById('modal-registro');
     formTransacao = document.getElementById('form-transacao');
     modalTitulo = document.getElementById('modal-titulo');
