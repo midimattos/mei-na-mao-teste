@@ -139,6 +139,10 @@ function bloquearApp(mostrarModal, mensagem = "") {
 
 // --- 🟢 LÓGICA DE VALIDAÇÃO FIREBASE RTDB 🟢 ---
 
+// ... (resto do código)
+
+// --- 🟢 LÓGICA DE VALIDAÇÃO FIREBASE RTDB 🟢 ---
+
 async function validarLicenca(event) {
     event.preventDefault();
     const chave = chaveLicencaInput.value.trim();
@@ -150,17 +154,20 @@ async function validarLicenca(event) {
         msgLicencaP.textContent = "Erro: Conecte-se à internet para validar a chave.";
         return;
     }
+    
+    // 🛑 NOVO: Obter ID do usuário (codinome)
+    const userId = carregarIdentificacao();
+    if (!userId) {
+        msgLicencaP.textContent = 'Erro: Defina uma identificação (codinome) primeiro (na seção "Sua Identificação").';
+        return;
+    }
 
     try {
         document.getElementById('btn-validar-licenca').textContent = "Validando...";
         
-        // Formata a chave para o caminho do Firebase (remove caracteres inválidos se houver)
         const safeKey = chave.replace(/[\.#$\/\[\]]/g, '_'); 
-        
-        // 1. Obtém a referência do nó no RTDB: /licenses/{chave}
         const licenseRef = ref(database, 'licenses/' + safeKey);
         
-        // 2. Lê os dados da licença
         const snapshot = await get(licenseRef); 
         const licenseData = snapshot.val(); 
 
@@ -168,25 +175,37 @@ async function validarLicenca(event) {
             msgLicencaP.textContent = 'Chave de licença inválida. Verifique o código.';
         } else if (licenseData.status === 'revoked') {
             msgLicencaP.textContent = 'Esta licença foi bloqueada.';
+        } else if (licenseData.consumedBy && licenseData.consumedBy !== userId) { 
+            // 🛑 NOVO: Chave já usada por outro usuário
+            msgLicencaP.textContent = `Chave já utilizada por outro usuário: ${licenseData.consumedBy}.`;
         } else {
+            // Licença é válida E não está consumida (ou está consumida por este mesmo usuário)
             const validadeRemota = new Date(licenseData.validUntil);
             const hoje = new Date();
             
+            let newValidUntil;
+
             // 3. Checagem de Validade
             if (validadeRemota <= hoje) {
-                 // Licença expirada - concede 30 dias temporários no localStorage para uso offline
-                 const newValidUntil = new Date();
+                 // Licença expirada - concede 30 dias temporários
+                 newValidUntil = new Date();
                  newValidUntil.setDate(newValidUntil.getDate() + 30);
-                 
-                 salvarValidadeLicenca(newValidUntil);
                  
                  alert(`Licença expirada, mas validada online por 30 dias até ${newValidUntil.toLocaleDateString('pt-BR')}.`);
 
             } else {
-                // Licença válida: Apenas salva a validade remota localmente para uso offline
-                salvarValidadeLicenca(validadeRemota); 
-                alert(`Licença validada com sucesso até ${validadeRemota.toLocaleDateString('pt-BR')}.`);
+                // Licença válida
+                newValidUntil = validadeRemota;
+                alert(`Licença validada com sucesso até ${newValidUntil.toLocaleDateString('pt-BR')}.`);
             }
+            
+            salvarValidadeLicenca(newValidUntil); 
+
+            // 🛑 NOVO: Grava o consumo no Firebase (vinculando a chave ao codinome)
+            await update(licenseRef, {
+                consumedBy: userId,
+                consumedDate: new Date().toISOString()
+            });
             
             // Desbloqueia e recarrega a dashboard
             bloquearApp(false);
@@ -200,6 +219,7 @@ async function validarLicenca(event) {
         document.getElementById('btn-validar-licenca').textContent = "Validar e Desbloquear";
     }
 }
+// -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 
 
