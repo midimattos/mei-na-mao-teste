@@ -262,7 +262,8 @@ function renderizarGraficoDespesas(transacoesMes) {
 }
 
 function atualizarDashboard() {
-    const hoje = new Date(); // <--- DECLARAÇÃO CORRETA A SER MANTIDA
+    // 🔴 CORREÇÃO FINAL GARANTIDA: Declaração de 'hoje' no topo da função.
+    const hoje = new Date(); 
     const mesAtual = hoje.getMonth();
     const anoAtual = hoje.getFullYear();
 
@@ -315,7 +316,7 @@ function atualizarDashboard() {
         progressElement.style.backgroundColor = '#4CAF50'; // Verde
     }
 
-    // Atualiza o mês no header (a duplicação de 'const hoje = new Date();' foi removida aqui)
+    // Atualiza o mês no header 
     const nomeMes = hoje.toLocaleString('pt-BR', { month: 'long' });
     document.getElementById('mes-atual').textContent = `${nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1)} de ${anoAtual}`;
 
