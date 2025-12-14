@@ -4,7 +4,8 @@
 
 // Importa as funções necessárias do Firebase SDK (versão modular)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getDatabase, once, ref } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+import { get, getDatabase, ref } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+;
 // Nota: Usamos a v9.6.1 (compatível) para garantir que funcione em mais browsers.
 // Se você está usando a v12.6.0, as URLs de importação devem ser ajustadas
 // para a v12.6.0 (ex: '.../firebasejs/12.6.0/firebase-database.js').
@@ -158,7 +159,7 @@ async function validarLicenca(event) {
         const licenseRef = ref(database, 'licenses/' + safeKey);
         
         // 2. Lê os dados da licença
-        const snapshot = await once(licenseRef);
+        const snapshot = await get(licenseRef); 
         const licenseData = snapshot.val(); 
 
         if (!licenseData) {
