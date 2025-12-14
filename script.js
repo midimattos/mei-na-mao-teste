@@ -39,9 +39,8 @@ const CORES_DESPESAS = {
 // 🔴 CORREÇÃO DE ESCOPO: Declarar variáveis DOM com 'let' no topo do módulo
 let modalRegistro, formTransacao, modalTitulo, tipoTransacaoInput, categoriaSelect;
 let modalExtrato, extratoBody, filtroMes, filtroCategoria, btnVerExtrato;
-let formIdentificacao, codinomeInput, identificacaoAtualP; 
-let modalLicenca, formLicenca, chaveLicencaInput, msgLicencaP;
-let licencaCodinomeInput; // 🟢 NOVO: Variável para o campo Codinome no modal de licença
+let identificacaoAtualP; // MANTIDO APENAS SE FOR USADO PARA MOSTRAR O NOME NO HEADER (Mas não existe no HTML atual)
+let modalLicenca, formLicenca, chaveLicencaInput, msgLicencaP, licencaCodinomeInput; 
 
 
 // --- 1. Persistência de Dados (LocalStorage) ---
@@ -71,33 +70,15 @@ function salvarValidadeLicenca(data) {
 }
 
 
-// --- 2. Lógica de Identificação ---
+// --- 2. Lógica de Identificação (SIMPLIFICADA) ---
+// Agora a Identificação é usada apenas para salvar e carregar o ID, 
+// a exibição na tela não é mais necessária já que a seção foi removida.
 
 function carregarIdentificacao() {
     return localStorage.getItem('codinomeMEI') || '';
 }
 
-function salvarIdentificacao(event) {
-    event.preventDefault();
-    const codinome = codinomeInput.value.trim();
-    if (codinome) {
-        localStorage.setItem('codinomeMEI', codinome);
-        exibirIdentificacao(codinome);
-        alert('Identificação salva!');
-    } else {
-        alert('O campo de identificação não pode estar vazio.');
-    }
-}
-
-function exibirIdentificacao(codinome) {
-    // 🟢 Correção: As variáveis DOM agora são inicializadas no DOMContentLoaded
-    if (codinome) {
-        identificacaoAtualP.textContent = `Identificação atual: ${codinome}`;
-        codinomeInput.value = codinome; 
-    } else {
-        identificacaoAtualP.textContent = 'Nenhuma identificação definida.';
-    }
-}
+// REMOVEMOS: salvarIdentificacao e exibirIdentificacao já que a seção não existe mais.
 
 
 // --- 3. Lógica de Validação e Bloqueio ---
@@ -106,15 +87,20 @@ function checarLicenca() {
     const validade = carregarValidadeLicenca();
     const hoje = new Date(); 
     const isOnline = navigator.onLine;
+    const codinome = carregarIdentificacao(); // Verifica se já tem codinome salvo
 
     if (!validade || validade <= hoje) {
-        if (isOnline) {
-            bloquearApp(true, "Licença expirada. Por favor, insira sua chave e revalide (necessita de internet).");
-            return false;
-        } else if (validade && validade <= hoje) {
+        let mensagem = "Seu acesso ao 'MEI na Mão' precisa ser revalidado. Por favor, insira sua identificação e chave de licença.";
+        
+        if (codinome && !isOnline) {
+            // Se tem licença vencida e está offline, só alerta que precisa de internet
             bloquearApp(false, "Conecte-se à internet para revalidar e liberar todas as funcionalidades.");
             return false; 
         }
+        
+        // Mostrar modal com formulário
+        bloquearApp(true, mensagem);
+        return false;
     }
     
     bloquearApp(false);
@@ -124,6 +110,12 @@ function checarLicenca() {
 function bloquearApp(mostrarModal, mensagem = "") {
     modalLicenca.style.display = mostrarModal ? 'flex' : 'none';
     msgLicencaP.textContent = mensagem;
+    
+    // 🟢 NOVO: Preenche o campo de codinome no modal se ele já estiver salvo
+    const codinomeSalvo = carregarIdentificacao();
+    if (codinomeSalvo && licencaCodinomeInput) {
+        licencaCodinomeInput.value = codinomeSalvo;
+    }
 
     const isLocked = mostrarModal || (carregarValidadeLicenca() <= new Date() && !navigator.onLine);
 
@@ -138,21 +130,21 @@ function bloquearApp(mostrarModal, mensagem = "") {
 }
 
 
-// --- 🟢 LÓGICA DE VALIDAÇÃO FIREBASE RTDB (COM VERIFICAÇÃO DE CONSUMO) 🟢 ---
+// --- 🟢 LÓGICA DE VALIDAÇÃO FIREBASE RTDB (COM CONSUMO E FLUXO ÚNICO) 🟢 ---
 
 async function validarLicenca(event) {
     event.preventDefault();
     const chave = chaveLicencaInput.value.trim();
     msgLicencaP.textContent = '';
     
-    // 🛑 NOVO: Obter e salvar o Codinome digitado no modal
+    // 🛑 Obter e salvar o Codinome digitado no modal
     const codinomeDigitado = licencaCodinomeInput.value.trim();
     if (!codinomeDigitado) {
         msgLicencaP.textContent = 'Erro: Por favor, preencha sua identificação (Codinome).';
         return;
     }
     
-    // Se digitou, salva imediatamente no localStorage e usa como userId
+    // 1. SALVA CODINOME IMEDIATAMENTE (Passo único de identificação)
     localStorage.setItem('codinomeMEI', codinomeDigitado); 
     const userId = codinomeDigitado; 
 
@@ -177,7 +169,7 @@ async function validarLicenca(event) {
         } else if (licenseData.status === 'revoked') {
             msgLicencaP.textContent = 'Esta licença foi bloqueada.';
         } else if (licenseData.consumedBy && licenseData.consumedBy !== userId) { 
-            // 🛑 CHAVE JÁ CONSUMIDA: Rejeita se o consumedBy for diferente do usuário atual
+            // CHAVE JÁ CONSUMIDA: Rejeita se o consumedBy for diferente do usuário atual
             msgLicencaP.textContent = `Chave já utilizada por outro usuário: ${licenseData.consumedBy}.`;
         } else {
             // Licença é válida E não está consumida (ou está consumida por este mesmo usuário)
@@ -202,7 +194,7 @@ async function validarLicenca(event) {
             
             salvarValidadeLicenca(newValidUntil); 
 
-            // 🛑 GRAVA CONSUMO: Grava o consumo no Firebase (vinculando a chave ao codinome)
+            // GRAVA CONSUMO: Grava o consumo no Firebase (vinculando a chave ao codinome)
             if (!licenseData.consumedBy) { // Apenas grava se ainda não tiver sido consumida
                  await update(licenseRef, {
                     consumedBy: userId,
@@ -284,7 +276,6 @@ function renderizarGraficoDespesas(transacoesMes) {
 }
 
 function atualizarDashboard() {
-    // 🔴 GARANTIDO: Declaração de 'hoje' no topo da função.
     const hoje = new Date(); 
     const mesAtual = hoje.getMonth();
     const anoAtual = hoje.getFullYear();
@@ -547,15 +538,16 @@ document.addEventListener('DOMContentLoaded', () => {
     filtroCategoria = document.getElementById('filtro-categoria');
     btnVerExtrato = document.getElementById('btn-ver-extrato');
 
-    formIdentificacao = document.getElementById('form-identificacao');
-    codinomeInput = document.getElementById('codinome');
-    identificacaoAtualP = document.getElementById('identificacao-atual'); // Variável crítica
+    // Elementos removidos do HTML principal, mas mantidos se houver algum vestígio no CSS/JavaScript
+    // formIdentificacao = document.getElementById('form-identificacao'); // Removido
+    // codinomeInput = document.getElementById('codinome'); // Removido
+    // identificacaoAtualP = document.getElementById('identificacao-atual'); // Removido
 
     modalLicenca = document.getElementById('modal-licenca');
     formLicenca = document.getElementById('form-licenca');
     chaveLicencaInput = document.getElementById('chave-licenca');
     msgLicencaP = document.getElementById('msg-licenca');
-    // 🟢 NOVO: Inicialização do campo de codinome no modal
+    // 🟢 Inicialização do campo de codinome no modal
     licencaCodinomeInput = document.getElementById('licenca-codinome'); 
 
     // 2. LÓGICA DE INICIALIZAÇÃO
@@ -568,7 +560,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const licencaValida = checarLicenca(); 
     
     if (licencaValida) {
-        exibirIdentificacao(codinomeInicial);
+        // A exibição da identificação não é mais necessária no HTML principal
+        // exibirIdentificacao(codinomeInicial); // Removido
         atualizarDashboard();
     }
     
@@ -594,8 +587,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Ações de Identificação
-    formIdentificacao.addEventListener('submit', salvarIdentificacao);
+    // Ações de Identificação (Não é mais necessário, já que o formulário foi removido)
+    // formIdentificacao.addEventListener('submit', salvarIdentificacao); // Removido
 
     // Ações de Licença
     formLicenca.addEventListener('submit', validarLicenca);
