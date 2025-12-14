@@ -262,7 +262,7 @@ function renderizarGraficoDespesas(transacoesMes) {
 }
 
 function atualizarDashboard() {
-    const hoje = new Date(); // <--- DECLARAÇÃO CORRETA A SER MANTIDA
+   
     const mesAtual = hoje.getMonth();
     const anoAtual = hoje.getFullYear();
 
