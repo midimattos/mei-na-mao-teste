@@ -140,6 +140,8 @@ function bloquearApp(mostrarModal, mensagem = "") {
     }
 }
 
+// --- Lógica de Validação e Bloqueio (Função validarLicenca) ---
+
 async function validarLicenca(event) {
     event.preventDefault();
     const chave = chaveLicencaInput.value.trim();
@@ -155,12 +157,15 @@ async function validarLicenca(event) {
     try {
         document.getElementById('btn-validar-licenca').textContent = "Validando...";
         
-        // --- CHAMADA AO APPS SCRIPT ---
+        // --- CHAMADA AO APPS SCRIPT (CORS OTIMIZADO) ---
         const response = await fetch(FIREBASE_VALIDATION_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            mode: 'cors', // Força o modo CORS (Pode ajudar)
+            // REMOVEMOS O HEADER application/json
             body: JSON.stringify({ licenseKey: chave })
         });
+
+        // ... o restante do código segue inalterado
 
         // O Apps Script não retorna status HTTP 400/500, então verificamos o JSON
         const result = await response.json();
