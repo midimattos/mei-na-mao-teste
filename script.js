@@ -164,50 +164,51 @@ async function validarLicenca(event) {
         const snapshot = await get(licenseRef); 
         const licenseData = snapshot.val(); 
 
+        // ... dentro da função validarLicenca ...
+
         if (!licenseData) {
             msgLicencaP.textContent = 'Chave de licença inválida. Verifique o código.';
         } else if (licenseData.status === 'revoked') {
             msgLicencaP.textContent = 'Esta licença foi bloqueada.';
-        } else if (licenseData.consumedBy && licenseData.consumedBy !== userId) { 
-            // CHAVE JÁ CONSUMIDA: Rejeita se o consumedBy for diferente do usuário atual
-            msgLicencaP.textContent = `Esta chave já foi utilizada por outro usuário.`;
-        } else {
-            // Licença é válida E não está consumida (ou está consumida por este mesmo usuário)
-            const validadeRemota = new Date(licenseData.validUntil);
-            const hoje = new Date();
+        } else if (licenseData.status === 'consumed') {
             
-            let newValidUntil;
+            // 🛑 NOVO FLUXO: BLOQUEIO TOTAL APÓS O PRIMEIRO USO.
+            // Se a chave já está marcada como 'consumed' no Firebase, bloqueia e avisa do suporte.
+            const msgSuporte = 'Esta chave já foi ativada e vinculada. Para reativar (após limpar cache ou trocar de celular), entre em contato com o suporte.';
 
-            // 3. Checagem de Validade
-            if (validadeRemota <= hoje) {
-                 // Licença expirada - concede 30 dias temporários
-                 newValidUntil = new Date();
-                 newValidUntil.setDate(newValidUntil.getDate() + 30);
-                 
-                 alert(`Licença expirada, mas validada online por 30 dias até ${newValidUntil.toLocaleDateString('pt-BR')}.`);
-
+            if (licenseData.consumedBy === userId) {
+                // Se foi usada pelo próprio usuário, mostra mensagem específica
+                msgLicencaP.textContent = msgSuporte;
             } else {
-                // Licença válida
-                newValidUntil = validadeRemota;
-                alert(`Licença validada com sucesso até ${newValidUntil.toLocaleDateString('pt-BR')}.`);
+                // Se foi usada por outro, mostra a mensagem de privacidade
+                msgLicencaP.textContent = 'Esta chave já foi utilizada por outro usuário e não pode ser revalidada.';
             }
+            
+        } else {
+            // 🟢 PRIMEIRA ATIVAÇÃO (A chave está 'ativa' ou sem status)
+
+            // 1. Define Validade Perpétua Local (para evitar que o modal apareça novamente)
+            const newValidUntil = new Date('2099-12-31T23:59:59');
+            
+            alert(`Licença ativada com sucesso! Você não precisará revalidá-la.`);
             
             salvarValidadeLicenca(newValidUntil); 
 
-            // GRAVA CONSUMO: Grava o consumo no Firebase (vinculando a chave ao codinome)
-            if (!licenseData.consumedBy) { // Apenas grava se ainda não tiver sido consumida
-                 await update(licenseRef, {
-                    consumedBy: userId,
-                    consumedDate: new Date().toISOString()
-                });
-            }
+            // 2. MARCA CHAVE COMO DESCARTADA (CONSUMIDA) NO FIREBASE
+            // Isso garante que nenhuma outra tentativa de ativação passará
+            await update(licenseRef, {
+                consumedBy: userId,
+                consumedDate: new Date().toISOString(),
+                status: 'consumed' // <-- CHAVE MARCA COMO USADA
+            });
             
-            // Desbloqueia e recarrega a dashboard
+            // 3. Finaliza
             bloquearApp(false);
             location.reload(); 
         }
         
     } catch (error) {
+
         console.error('Erro na comunicação com o Firebase:', error);
         msgLicencaP.textContent = 'Erro de comunicação. Verifique sua conexão com a internet.'; 
     } finally {
