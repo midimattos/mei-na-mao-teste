@@ -4,7 +4,7 @@
 
 // Importa as funções necessárias do Firebase SDK (versão modular)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { get, getDatabase, ref } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+import { get, getDatabase, ref, update } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
 // Suas credenciais do Firebase
 const firebaseConfig = {
@@ -41,6 +41,7 @@ let modalRegistro, formTransacao, modalTitulo, tipoTransacaoInput, categoriaSele
 let modalExtrato, extratoBody, filtroMes, filtroCategoria, btnVerExtrato;
 let formIdentificacao, codinomeInput, identificacaoAtualP; 
 let modalLicenca, formLicenca, chaveLicencaInput, msgLicencaP;
+let licencaCodinomeInput; // 🟢 NOVO: Variável para o campo Codinome no modal de licença
 
 
 // --- 1. Persistência de Dados (LocalStorage) ---
@@ -137,28 +138,28 @@ function bloquearApp(mostrarModal, mensagem = "") {
 }
 
 
-// --- 🟢 LÓGICA DE VALIDAÇÃO FIREBASE RTDB 🟢 ---
-
-// ... (resto do código)
-
-// --- 🟢 LÓGICA DE VALIDAÇÃO FIREBASE RTDB 🟢 ---
+// --- 🟢 LÓGICA DE VALIDAÇÃO FIREBASE RTDB (COM VERIFICAÇÃO DE CONSUMO) 🟢 ---
 
 async function validarLicenca(event) {
     event.preventDefault();
     const chave = chaveLicencaInput.value.trim();
     msgLicencaP.textContent = '';
     
+    // 🛑 NOVO: Obter e salvar o Codinome digitado no modal
+    const codinomeDigitado = licencaCodinomeInput.value.trim();
+    if (!codinomeDigitado) {
+        msgLicencaP.textContent = 'Erro: Por favor, preencha sua identificação (Codinome).';
+        return;
+    }
+    
+    // Se digitou, salva imediatamente no localStorage e usa como userId
+    localStorage.setItem('codinomeMEI', codinomeDigitado); 
+    const userId = codinomeDigitado; 
+
     if (!chave) return;
 
     if (!navigator.onLine) {
         msgLicencaP.textContent = "Erro: Conecte-se à internet para validar a chave.";
-        return;
-    }
-    
-    // 🛑 NOVO: Obter ID do usuário (codinome)
-    const userId = carregarIdentificacao();
-    if (!userId) {
-        msgLicencaP.textContent = 'Erro: Defina uma identificação (codinome) primeiro (na seção "Sua Identificação").';
         return;
     }
 
@@ -176,7 +177,7 @@ async function validarLicenca(event) {
         } else if (licenseData.status === 'revoked') {
             msgLicencaP.textContent = 'Esta licença foi bloqueada.';
         } else if (licenseData.consumedBy && licenseData.consumedBy !== userId) { 
-            // 🛑 NOVO: Chave já usada por outro usuário
+            // 🛑 CHAVE JÁ CONSUMIDA: Rejeita se o consumedBy for diferente do usuário atual
             msgLicencaP.textContent = `Chave já utilizada por outro usuário: ${licenseData.consumedBy}.`;
         } else {
             // Licença é válida E não está consumida (ou está consumida por este mesmo usuário)
@@ -201,11 +202,13 @@ async function validarLicenca(event) {
             
             salvarValidadeLicenca(newValidUntil); 
 
-            // 🛑 NOVO: Grava o consumo no Firebase (vinculando a chave ao codinome)
-            await update(licenseRef, {
-                consumedBy: userId,
-                consumedDate: new Date().toISOString()
-            });
+            // 🛑 GRAVA CONSUMO: Grava o consumo no Firebase (vinculando a chave ao codinome)
+            if (!licenseData.consumedBy) { // Apenas grava se ainda não tiver sido consumida
+                 await update(licenseRef, {
+                    consumedBy: userId,
+                    consumedDate: new Date().toISOString()
+                });
+            }
             
             // Desbloqueia e recarrega a dashboard
             bloquearApp(false);
@@ -219,7 +222,6 @@ async function validarLicenca(event) {
         document.getElementById('btn-validar-licenca').textContent = "Validar e Desbloquear";
     }
 }
-// -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 
 
@@ -282,7 +284,7 @@ function renderizarGraficoDespesas(transacoesMes) {
 }
 
 function atualizarDashboard() {
-    // 🔴 CORREÇÃO FINAL GARANTIDA: Declaração de 'hoje' no topo da função.
+    // 🔴 GARANTIDO: Declaração de 'hoje' no topo da função.
     const hoje = new Date(); 
     const mesAtual = hoje.getMonth();
     const anoAtual = hoje.getFullYear();
@@ -553,12 +555,19 @@ document.addEventListener('DOMContentLoaded', () => {
     formLicenca = document.getElementById('form-licenca');
     chaveLicencaInput = document.getElementById('chave-licenca');
     msgLicencaP = document.getElementById('msg-licenca');
+    // 🟢 NOVO: Inicialização do campo de codinome no modal
+    licencaCodinomeInput = document.getElementById('licenca-codinome'); 
 
     // 2. LÓGICA DE INICIALIZAÇÃO
+    // 🟢 Novo: Preenche o campo de codinome no modal se ele já estiver salvo no localStorage
+    const codinomeInicial = carregarIdentificacao();
+    if (codinomeInicial && licencaCodinomeInput) {
+        licencaCodinomeInput.value = codinomeInicial;
+    }
+    
     const licencaValida = checarLicenca(); 
     
     if (licencaValida) {
-        const codinomeInicial = carregarIdentificacao();
         exibirIdentificacao(codinomeInicial);
         atualizarDashboard();
     }
