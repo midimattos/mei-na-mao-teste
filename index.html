@@ -146,30 +146,24 @@
         </div>
     </div>
     
-    <div id="modal-licenca" class="modal-licenca">
-    <div class="modal-content">
-        <div class="input-group">
-            <label for="licenca-codinome">Sua Identificação (Codinome):</label>
-            <input type="text" id="licenca-codinome" required placeholder="Seu apelido ou nome de usuário">
-        </div>
-
-        <div class="input-group">
-            <label for="chave-licenca">Chave de Licença:</label>
-            <input type="text" id="chave-licenca" required placeholder="Ex: VENDA-001-TESTE">
-        </div>
-        
-        </div>
-</div>
-
     <div id="modal-licenca" class="modal-overlay">
         <div class="modal-conteudo">
             <h2>Licença Expirada ou Bloqueada</h2>
             <p id="msg-licenca-texto">Seu acesso ao "MEI na Mão" precisa ser revalidado. Por favor, insira sua chave de licença e conecte-se à internet para continuar usando o aplicativo.</p>
             
             <form id="form-licenca">
-                <label for="chave-licenca">Chave de Licença:</label>
-                <input type="text" id="chave-licenca" name="chave" required placeholder="Insira seu código de licença" maxlength="30">
+                <div class="input-group">
+                    <label for="licenca-codinome">Sua Identificação (Codinome):</label>
+                    <input type="text" id="licenca-codinome" required placeholder="Seu apelido ou nome de usuário" maxlength="50">
+                </div>
+
+                <div class="input-group">
+                    <label for="chave-licenca">Chave de Licença:</label>
+                    <input type="text" id="chave-licenca" name="chave" required placeholder="Insira seu código de licença" maxlength="30">
+                </div>
+
                 <p id="msg-licenca" style="color: red; margin-top: 10px;"></p>
+
                 <div class="form-acoes">
                     <button type="submit" id="btn-validar-licenca" class="btn-salvar">Validar e Desbloquear</button>
                 </div>
